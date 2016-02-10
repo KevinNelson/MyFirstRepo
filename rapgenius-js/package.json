@@ -1,0 +1,46 @@
+{
+  "name": "rapgenius-js",
+  "description": "A client that queries the RapGenius (www.rapgenius.com) website",
+  "version": "0.1.2",
+  "keywords": [
+    "rap",
+    "rock",
+    "rapgenius",
+    "client",
+    "lyrics",
+    "music"
+  ],
+  "author": {
+    "name": "kenshiro-o"
+  },
+  "main": "src/geniusClient",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kenshiro-o/RapGenius-JS.git"
+  },
+  "dependencies": {
+    "superagent": "0.12.x",
+    "cheerio": "0.10.x"
+  },
+  "devDependencies": {
+    "vows": "*",
+    "mocha": "*"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "gitHead": "2adcfa7d6ba4d3f06b06e53491e8a4b926f64388",
+  "readme": "# RapGenius-JS [![Build Status](https://travis-ci.org/kenshiro-o/RapGenius-JS.png?branch=master)](https://travis-ci.org/kenshiro-o/RapGenius-JS)\r\n\r\n  rapgenius-js is a simple client that enables you to query RapGenius(www.rapgenius.com) and retrieve\r\ninformation about rap and rock artists and songs.\r\n\r\n## Rationale\r\n\r\n  This project was created because RapGenius does currently not support a Node.js API.\r\n\r\n## Installation\r\n\r\n```bash\r\n$ npm install rapgenius-js\r\n```\r\n  \r\n## Usage\r\n\r\n  The API is very simple to use and currently enables you to perform the following:\r\n\r\n### Model objects\r\n\r\n#### Artist\r\n    Artist\r\n      - name: String\r\n      - link: String\r\n      - popularSongs: Array (of String)\r\n      - songs: Array (of String)\r\n\r\n#### Song\r\n    Song\r\n      - name: String\r\n      - artists: String\r\n      - link: String\r\n\r\n#### Lyrics\r\n    Verses\r\n      - id: int\r\n      - content: String\r\n      - explanation: String\r\n\r\n    Section\r\n      - name: String\r\n      - content: String\r\n      - verses: Array (of Verses)\r\n\r\n    Lyrics\r\n      - songId: int\r\n      - songTitle: String\r\n      - mainArtist: String\r\n      - featuringArtists: Array (of String)\r\n      - producingArtists: Array (of String)\r\n      - sections: Array (of Section)\r\n\r\n### Search for an artist:\r\n\r\n```js\r\nvar rapgeniusClient = require(\"rapgenius-js\");\r\n\r\nrapgeniusClient.searchArtist(\"GZA\", \"rap\", function(err, artist){\r\n  if(err){\r\n    console.log(\"Error: \" + err);\r\n  }else{\r\n    console.log(\"Rap artist found [name=%s, link=%s, popular-songs=%d]\",\r\n                artist.name, artist.link, artist.popularSongs.length);\r\n\r\n  }\r\n});\r\n\r\n//Example for a rock artist\r\nrapgeniusClient.searchArtist(\"Bruce Springsteen\", \"rock\", function(err, artist){\r\n  if(err){\r\n    console.log(\"Error: \" + err);\r\n  }else{\r\n    console.log(\"Rap artist found [name=%s, link=%s, popular-songs=%d]\",\r\n                artist.name, artist.link, artist.popularSongs.length);\r\n\r\n  }\r\n});\r\n```\r\n\r\n### Search for a song:\r\n\r\n```js\r\nvar rapgeniusClient = require(\"rapgenius-js\");\r\n\r\nrapgeniusClient.searchSong(\"Liquid Swords\", \"rap\", function(err, songs){\r\n  if(err){\r\n    console.log(\"Error: \" + err);\r\n  }else{\r\n    console.log(\"Songs that matched the search query were found\" +\r\n                \"[songs-found=%d, first-song-name=%s\", songs.length, songs[0].name);\r\n  }\r\n});\r\n```\r\n\r\n### Search for the lyrics of a song along with their meaning:\r\n\r\n```js\r\nvar rapgeniusClient = require(\"rapgenius-js\");\r\n\r\nvar lyricsSearchCb = function(err, lyricsAndExplanations){\r\n    if(err){\r\n      console.log(\"Error: \" + err);\r\n    }else{\r\n      //Printing lyrics with section names\r\n      var lyrics = lyricsAndExplanations.lyrics;\r\n      var explanations = lyricsAndExplanations.explanations;\r\n      console.log(\"Found lyrics for song [title=%s, main-artist=%s, featuring-artists=%s, producing-artists=%s]\",\r\n        lyrics.songTitle, lyrics.mainArtist, lyrics.featuringArtists, lyrics.producingArtists);\r\n      console.log(\"**** LYRICS *****\\n%s\", lyrics.getFullLyrics(true));\r\n\r\n      //Now we can embed the explanations within the verses\r\n      lyrics.addExplanations(explanations);\r\n      var firstVerses = lyrics.sections[0].verses[0];\r\n      console.log(\"\\nVerses:\\n %s \\n\\n *** This means ***\\n%s\", firstVerses.content, firstVerses.explanation);\r\n    }\r\n};\r\n\r\nvar searchCallback = function(err, songs){\r\n  if(err){\r\n    console.log(\"Error: \" + err);\r\n  }else{\r\n    if(songs.length > 0){\r\n      //We have some songs\r\n      rapgeniusClient.searchLyricsAndExplanations(songs[0].link, \"rap\", lyricsSearchCb);\r\n    }\r\n  }\r\n};\r\n\r\nrapgeniusClient.searchSong(\"Liquid Swords\", \"rap\", searchCallback);\r\n```\r\n\r\n\r\n## Additional features\r\n\r\n  I will work on the following features when I get the time:\r\n- Refactor code base\r\n- Improve performance\r\n\r\n## Licence\r\n\r\nMIT (Make It Tremendous)\r\n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/kenshiro-o/RapGenius-JS/issues"
+  },
+  "homepage": "https://github.com/kenshiro-o/RapGenius-JS#readme",
+  "_id": "rapgenius-js@0.1.2",
+  "_shasum": "4e5519eb5622c915e4f15780771a625361c6925f",
+  "_from": "git+https://github.com/kenshiro-o/RapGenius-JS.git",
+  "_resolved": "git+https://github.com/kenshiro-o/RapGenius-JS.git#2adcfa7d6ba4d3f06b06e53491e8a4b926f64388"
+}
